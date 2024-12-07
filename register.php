@@ -1,3 +1,36 @@
+<?php
+include('config.php');
+
+if(isset($_POST['submit'])){
+    $name =$_POST['name'];
+    $email =$_POST['email'];
+    $password = $_POST['password'];
+    $role = $_POST['role'];
+   
+    $sql = "INSERT INTO users (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
+    $query = mysqli_query($conn, $sql);
+    if ($query) {
+        echo "Registration successful!";
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
+}
+
+  
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,13 +78,14 @@
                         <div class="mb-3">
                             <label for="role" class="form-label">Select Role</label>
                             <select class="form-select" id="role" name="role" required>
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
+                                <option  name= "role" value="user">User</option>
+                                <option name= "role"value="admin">Admin</option>
                             </select>
                         </div>
                         
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                        <button type="submit" name="submit"class="btn btn-primary w-100">Register</button>
+                        <button type="submit" name="login" class="btn btn-primary w-100 mt-2" href ="login.php">Login</button>
                     </form>
                 </div>
             </div>

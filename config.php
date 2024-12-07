@@ -1,5 +1,12 @@
-<?php 
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "admin_user_dashboard"; 
 
-echo "hello";
+$conn = new mysqli($servername, $username, $password, $dbname);
+ if($conn){
+    echo"success";  }
+    ?>
+   
 
-?>
