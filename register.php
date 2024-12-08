@@ -6,30 +6,35 @@ if(isset($_POST['submit'])){
     $email =$_POST['email'];
     $password = $_POST['password'];
     $role = $_POST['role'];
-   
-    $sql = "INSERT INTO users (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
-    $query = mysqli_query($conn, $sql);
-    if ($query) {
-        echo "Registration successful!";
-    } else {
-        echo "Error: " . mysqli_error($conn);
+   $cpass = $_POST['confirm_password'];
+    if($password !== $cpass){
+        echo "<script>
+                alert('Passwords do not match!');
+                setTimeout(function() {
+                    window.location.href = 'register.php';
+                }, 1500);
+              </script>";
+        exit();
+    }else{
+
+        $sql = "INSERT INTO users (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
+        $query = mysqli_query($conn, $sql);
+        if ($query) {
+            
+            echo "<script>
+            alert('Registration successful');
+            setTimeout(function() {
+                window.location.href = 'login.php';
+            }, 1500);
+          </script>";
+        } else {
+            echo "Error: " . mysqli_error($conn);
+        }
     }
 }
 
   
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
