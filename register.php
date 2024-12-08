@@ -6,41 +6,40 @@ if(isset($_POST['submit'])){
     $name =$_POST['name'];
     $email =$_POST['email'];
     $password = md5($_POST['password']);
+    echo $password;
     $role = $_POST['role'];
-   
-    $sql = "INSERT INTO users (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
-    $query = mysqli_query($conn, $sql);
-    if ($query == 'true') {
-        echo "Registration successful!";
-    } else {
-        echo "Error: " . mysqli_error($conn);
+   $cpass = md5($_POST['confirm_password']);
+   echo $cpass;
+    if($password !== $cpass){
+        echo "<script>
+                alert('Passwords do not match!');
+                setTimeout(function() {
+                    window.location.href = 'register.php';
+                }, 1500);
+              </script>";
+        exit();
+    }else{
+
+        $sql = "INSERT INTO users (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
+        $query = mysqli_query($conn, $sql);
+        if ($query) {
+            
+            echo "<script>
+            alert('Registration successful');
+            setTimeout(function() {
+                window.location.href = 'login.php';
+            }, 1500);
+          </script>";
+        } else {
+            echo "Error: " . mysqli_error($conn);
+        }
     }
-}
-if ($query) {
-    $_SESSION['email'] = $email;
-    $_SESSION['name'] = $name;
-    $_SESSION['role'] = $role;
-    $user_id = mysqli_insert_id($conn);
-    $_SESSION['id'] = $id;
-  $_SESSION['status'] = "success";
-    header('Location: login.php');
-    exit();
-  }
+}else{
+    echo "Submit Button Not define!";
 }
 
+  
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -60,7 +59,7 @@ if ($query) {
                     <h3>Registration Form</h3>
                 </div>
                 <div class="card-body">
-                    <form action="login.php" method="POST">
+                    <form action="" method="POST">
                         <!-- Name -->
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
