@@ -1,22 +1,33 @@
-<?php
-include('config.php');
+ <?php
+ session_start();
+ include('config.php');
 
 if(isset($_POST['submit'])){
     $name =$_POST['name'];
     $email =$_POST['email'];
-    $password = $_POST['password'];
+    $password = md5($_POST['password']);
     $role = $_POST['role'];
    
     $sql = "INSERT INTO users (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
     $query = mysqli_query($conn, $sql);
-    if ($query) {
+    if ($query == 'true') {
         echo "Registration successful!";
     } else {
         echo "Error: " . mysqli_error($conn);
     }
 }
+if ($query) {
+    $_SESSION['email'] = $email;
+    $_SESSION['name'] = $name;
+    $_SESSION['role'] = $role;
+    $user_id = mysqli_insert_id($conn);
+    $_SESSION['id'] = $id;
+  $_SESSION['status'] = "success";
+    header('Location: login.php');
+    exit();
+  }
+}
 
-  
 ?>
 
 
@@ -49,7 +60,7 @@ if(isset($_POST['submit'])){
                     <h3>Registration Form</h3>
                 </div>
                 <div class="card-body">
-                    <form action="register.php" method="POST">
+                    <form action="login.php" method="POST">
                         <!-- Name -->
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
@@ -85,7 +96,7 @@ if(isset($_POST['submit'])){
                         
                         <!-- Submit Button -->
                         <button type="submit" name="submit"class="btn btn-primary w-100">Register</button>
-                        <button type="submit" name="login" class="btn btn-primary w-100 mt-2" href ="login.php">Login</button>
+                        <button type="login" name="login" class="btn btn-primary w-100 mt-2" href ="login.php">Login</button>
                     </form>
                 </div>
             </div>
