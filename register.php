@@ -1,16 +1,40 @@
- <?php
- session_start();
- include('config.php');
+<?php
+session_start();
+include('config.php');
 
-if(isset($_POST['submit'])){
-    $name =$_POST['name'];
-    $email =$_POST['email'];
-    $password = md5($_POST['password']);
-    echo $password;
+if (isset($_POST['submit'])) {
+    // Collect form data
+    $name =  $_POST['name'];
+    $email =  $_POST['email'];
+    $password = md5($_POST['password']); // Password hashing
+    $cpass = md5($_POST['confirm_password']);
     $role = $_POST['role'];
-   $cpass = md5($_POST['confirm_password']);
-   echo $cpass;
-    if($password !== $cpass){
+
+    // File upload handling
+    if (isset($_FILES['upload_file']) && $_FILES['upload_file']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = "upload/"; // Target folder for uploaded files
+        
+
+        $fileType = $_FILES['upload_file']['type'];
+        $fileName = uniqid('file_', true) . "_" . basename($_FILES['upload_file']['name']);
+        $fileTmpName = $_FILES['upload_file']['tmp_name'];
+        $filePath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($fileTmpName, $filePath)) {
+            // File upload successful
+        } else {
+            echo "<script>
+                    alert('File upload failed!');
+                    setTimeout(function() {
+                        window.location.href = 'register.php';
+                    }, 1500);
+                  </script>";
+            exit();
+        }
+    }
+
+    // Password confirmation check
+    if ($password !== $cpass) {
         echo "<script>
                 alert('Passwords do not match!');
                 setTimeout(function() {
@@ -18,28 +42,28 @@ if(isset($_POST['submit'])){
                 }, 1500);
               </script>";
         exit();
-    }else{
+    } else {
+        // Insert data into database
+        $sql = "INSERT INTO users (name, email, password, role, upload_file) 
+                VALUES ('$name', '$email', '$password', '$role', '$filePath')";
 
-        $sql = "INSERT INTO users (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
-        $query = mysqli_query($conn, $sql);
-        if ($query) {
-            
+        if (mysqli_query($conn, $sql)) {
             echo "<script>
-            alert('Registration successful');
-            setTimeout(function() {
-                window.location.href = 'login.php';
-            }, 1500);
-          </script>";
+                    alert('Registration successful');
+                    setTimeout(function() {
+                        window.location.href = 'login.php';
+                    }, 1500);
+                  </script>";
         } else {
             echo "Error: " . mysqli_error($conn);
         }
     }
-}else{
-    echo "Submit Button Not define!";
+} else {
+    echo "Submit Button Not Defined!";
 }
-
-  
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +83,7 @@ if(isset($_POST['submit'])){
                     <h3>Registration Form</h3>
                 </div>
                 <div class="card-body">
-                    <form action="" method="POST">
+                    <form action="" method="POST" enctype="multipart/form-data">
                         <!-- Name -->
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
@@ -92,6 +116,8 @@ if(isset($_POST['submit'])){
                                 <option name= "role"value="admin">Admin</option>
                             </select>
                         </div>
+                        <label for="upload_file" class="form-label">upload file</label>
+                        <input type="file" class="form-control" id="upload_file" name="upload_file" required>
                         
                         <!-- Submit Button -->
                         <button type="submit" name="submit"class="btn btn-primary w-100">Register</button>

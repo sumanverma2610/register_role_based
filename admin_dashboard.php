@@ -24,6 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
     exit();
 }
 
+// Handle the add user form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_user'])) {
+    $new_name = $_POST['name'];
+    $new_email = $_POST['email'];
+
+    // Insert the new user into the database
+    $add_sql = "INSERT INTO users (name, email, role) VALUES ('$new_name', '$new_email', 'admin')";
+    mysqli_query($conn, $add_sql);
+    header("Location: admin_dashboard.php"); // Redirect back to the dashboard after adding the user
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -38,12 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
 <body>
 <div class="container mt-5">
     <h1 class="text-center">Admin Dashboard</h1>
-    <p class="text-center">Welcome, <?php echo $_SESSION['user_id']; ?>!</p>
+    <p class="text-center">Welcome, <?php echo $_SESSION['name']; ?>!</p>
     <a href="logout.php">Logout</a>
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Admin List</h3>
-        </div>
+           
         <div class="card-body">
             <table class="table table-bordered table-hover">
                 <thead class="table-dark">
@@ -51,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Action</th> <!-- New Action Column -->
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,7 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
                                         <button class='btn btn-sm btn-warning' data-bs-toggle='modal' data-bs-target='#editUserModal' 
                                         onclick=\"editUser('{$row['id']}', '{$row['name']}', '{$row['email']}')\">Edit</button>
                                         <a href='delete_user.php?id={$row['id']}' class='btn btn-sm btn-danger' onclick=\"return confirm('Are you sure you want to delete this user?');\">Delete</a>
-                                    </td>
+                                     <button class='btn btn-sm btn-success' data-bs-toggle='modal' data-bs-target='#addUserModal'>Add User</button>
+        </div>
+                                        </td>
                                   </tr>";
                         }
                     } else {
@@ -80,9 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
         </div>
     </div>
 </div>
-
-
-
 
 <!-- Edit User Modal -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
@@ -107,6 +117,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" name="update_user" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="add_user_name" class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" id="add_user_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="add_user_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="add_user_email" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" name="add_user" class="btn btn-success">Add User</button>
                 </div>
             </form>
         </div>
